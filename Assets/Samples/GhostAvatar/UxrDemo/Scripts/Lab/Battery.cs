@@ -83,7 +83,7 @@ namespace UltimateXR.Examples.FullScene.Lab
                         GrabbableObject.TranslationConstraint = UxrTranslationConstraintMode.RestrictLocalOffset;
                         GrabbableObject.RotationConstraint    = UxrRotationConstraintMode.Locked;
 
-                        UxrGrabManager.Instance.PlaceObject(GrabbableObject, batteryAnchor.Anchor, UxrPlacementType.Smooth, false);
+                        UxrGrabManager.Instance.PlaceObject(GrabbableObject, batteryAnchor.Anchor, UxrPlacementOptions.Smooth, false);
 
                         if (_manipulationHapticFeedback)
                         {

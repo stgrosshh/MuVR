@@ -9,6 +9,22 @@
       },
       "hash": "1921fb03fe903a64f9244106f3152c41404c2fc5"
     },
+    "com.firstgeargames.fishnet": {
+      "version": "https://github.com/FirstGearGames/FishNet.git?path=Assets/FishNet",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.animation": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.particlesystem": "1.0.0",
+        "com.unity.modules.physics": "1.0.0",
+        "com.unity.modules.physics2d": "1.0.0",
+        "com.unity.modules.ui": "1.0.0"
+      },
+      "hash": "986caa1befa29b0573047eaeeefaa9df338e485e"
+    },
     "com.unity.addressables": {
       "version": "1.19.19",
       "depth": 2,
@@ -138,8 +154,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.nuget.newtonsoft-json": {
-      "version": "3.1.0",
-      "depth": 2,
+      "version": "3.2.1",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -338,6 +354,16 @@
         "com.unity.xr.legacyinputhelpers": "2.1.2"
       },
       "url": "https://packages.unity.com"
+    },
+    "com.vrmada.ultimatexr-unity": {
+      "version": "https://github.com/VRMADA/ultimatexr-unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.xr.management": "4.2.1",
+        "com.unity.render-pipelines.universal": "12.1.6"
+      },
+      "hash": "985f20cb845bf94fa6307b1a6f969ff25a432399"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

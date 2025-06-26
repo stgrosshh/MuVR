@@ -38,12 +38,15 @@ namespace UltimateXR.Devices.Integrations.DeviceSimulator {
 				Debug.LogWarning("No camera has been setup for this avatar");
 				return;
 			}
+			
+			/* TODO check how we can set rotation from simulator after setters have been made private
 
 			LocalAvatarLeftHandSensorRot = simulator.LeftControllerState.deviceRotation;
 			LocalAvatarLeftHandSensorPos = simulator.LeftControllerState.devicePosition;
 
 			LocalAvatarRightHandSensorRot = simulator.RightControllerState.deviceRotation;
 			LocalAvatarRightHandSensorPos = simulator.RightControllerState.devicePosition;
+			*/
 		}
 	}
 }
