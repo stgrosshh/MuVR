@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
@@ -27,8 +28,7 @@ namespace uMuVR {
         /// <summary>
         /// The connection this volume currently considers to be its owner 
         /// </summary>
-        [SyncVar(OnChange = nameof(OnVolumeOwnerChanged))]
-        public NetworkConnection volumeOwner = null;
+        public readonly SyncVar<NetworkConnection> volumeOwner = new SyncVar<NetworkConnection>(null);
         
         /// <summary>
         /// Variable which displays who the current owner of the volume is
@@ -49,7 +49,18 @@ namespace uMuVR {
         /// The ownership mode utilized by the device
         /// </summary>
         [SerializeField] private OwnershipMode mode;
+
+        public void Awake()
+        {
+            volumeOwner.OnChange += OnVolumeOwnerChanged;
+        }
+
+        public void OnDestroy()
+        {
+            volumeOwner.OnChange -= OnVolumeOwnerChanged;
+        }
         
+
         /// <summary>
         /// If we are in LocalUser mode, assign the user who spawned this object as the volumeOwner
         /// </summary>
@@ -172,7 +183,7 @@ namespace uMuVR {
         /// Function that updates the debug display when the volume's owner changes
         /// </summary>
         private void OnVolumeOwnerChanged(NetworkConnection prev, NetworkConnection @new, bool asServer) {
-            volumeOwnerDebug = volumeOwner?.ClientId ?? -1;
+            volumeOwnerDebug = volumeOwner.Value?.ClientId ?? -1;
         }
 
         
@@ -219,11 +230,11 @@ namespace uMuVR {
         /// <param name="newOwner">The connection which should become the new owner</param>
         [Server]
         protected void UpdateOwner(NetworkConnection newOwner) {
-            volumeOwner = newOwner;
+            volumeOwner.Value = newOwner;
 
             // Notify all of the contained OwnershipManagers that the owner has changed
             foreach (var m in containedOwnershipManagers)
-                m.GiveOwnership(volumeOwner);
+                m.GiveOwnership(volumeOwner.Value);
         }
         
         /// <summary>

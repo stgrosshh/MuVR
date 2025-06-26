@@ -163,15 +163,15 @@ namespace uMuVR {
 
 			var ov = other.GetComponent<OwnershipVolume>();
 			if (ov is null) return;
-			if (ov.volumeOwner == Owner) return; // No need to transfer if the volume has the same owner
+			if (ov.volumeOwner.Value == Owner) return; // No need to transfer if the volume has the same owner
 
 			// If we are currently selected don't transfer ownership
 			if (isSelected) return;
 
 			// Debug.Log($"{this} - {ov}");
 
-			if (ov.volumeOwner is not null)
-				GiveOwnershipWithCooldown(ov.volumeOwner, ownershipTransferCooldown, true);
+			if (ov.volumeOwner.Value is not null)
+				GiveOwnershipWithCooldown(ov.volumeOwner.Value, ownershipTransferCooldown, true);
 
 			// Be sure to listen for changes in ownership
 			ov.RegisterAsListener(this);

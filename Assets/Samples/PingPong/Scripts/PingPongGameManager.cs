@@ -1,15 +1,16 @@
+using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using uMuVR;
 using TMPro;
 using UnityEngine;
 using NetworkBehaviour = uMuVR.Enhanced.NetworkBehaviour;
+using Random = UnityEngine.Random;
 
 public class PingPongGameManager : NetworkBehaviour {
-	[SyncVar(OnChange = nameof(UpdateScores))]
-	public int plusScore = 0;
-	[SyncVar(OnChange = nameof(UpdateScores))]
-	public int minusScore = 0;
+	public readonly SyncVar<int> plusScore =  new SyncVar<int>(0);
+	public readonly SyncVar<int> minusScore = new SyncVar<int>(0);
+	
 	
 	[SerializeField] private NetworkObject ballPrefab;
 	[SerializeField] private Transform plusSpawn, minusSpawn;
@@ -17,6 +18,18 @@ public class PingPongGameManager : NetworkBehaviour {
 	[SerializeField] private TextMeshPro text;
 
 	private bool spawnPlus = false;
+
+	public void Awake()
+	{
+		minusScore.OnChange += UpdateScores;
+		plusScore.OnChange += UpdateScores;
+	}
+
+	public void OnDestroy()
+	{
+		minusScore.OnChange -= UpdateScores;
+		plusScore.OnChange -= UpdateScores;
+	}
 
 	// Randomly chose a spawn location for the ball on the server
 	public override void OnStartServer() {
@@ -36,7 +49,7 @@ public class PingPongGameManager : NetworkBehaviour {
 	[Server]
 	public void RespawnBall() {
 		var ball = Instantiate(ballPrefab, spawnPlus ? plusSpawn.position : minusSpawn.position, Quaternion.identity);
-		Spawn(ball.gameObject, spawnPlus ? plusVolume.volumeOwner : minusVolume.volumeOwner);
+		Spawn(ball.gameObject, spawnPlus ? plusVolume.volumeOwner.Value : minusVolume.volumeOwner.Value);
 	}
 
 	// Function called when an object goes out of bounds on the +x side
@@ -57,8 +70,8 @@ public class PingPongGameManager : NetworkBehaviour {
 	[Server]
 	private void OnBallOutOfBounds(NetworkObject ball, bool plusOut) {
 		// Increment score 
-		if (plusOut) minusScore++;
-		else plusScore++;
+		if (plusOut) minusScore.Value++;
+		else plusScore.Value++;
 
 		// Respawn ball on the losing side
 		spawnPlus = plusOut;
