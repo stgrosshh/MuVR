@@ -1,0 +1,14 @@
+{
+  "name": "org.hpcvis.uMuVR",
+  "displayName": "MuVR",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "Multi-User Virtual Reality and Body Presence framework is a Unity framework that provides a foundation for multiuser/player VR experiences. Networking layer is based on https://github.com/FirstGearGames/FishNet/",
+  "license": "MIT",
+  "keywords": [ "Networking", "Utils", "Editor", "Extensions" ],
+  "author": {
+    "name": "Joshua Dahl Erik Marsh Christopher Lewis Frederick C. Harris Jr.",
+    "url": "https://github.com/hpcvis/MuVR"
+  },
+  "dependencies": {}
+}

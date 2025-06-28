@@ -7,7 +7,7 @@ public class BallSpawner : NetworkBehaviour {
 	public NetworkObject ballPrefab;
 
 	public void SpawnBall(Vector3 position, Vector3 forward, float velocity) {
-		if (IsServer) SpawnBallServer(position, forward, velocity, LocalConnection);
+		if (IsServerInitialized) SpawnBallServer(position, forward, velocity, LocalConnection);
 		else SpawnBallServerRPC(position, forward, velocity, LocalConnection);
 	}
 

@@ -7,7 +7,7 @@ public class DeleteOnKey : NetworkBehaviour  {
     void Update() {
         if (!Input.GetKeyDown(KeyCode.Delete)) return;
         
-        if (IsServer) Despawn();
+        if (IsServerInitialized) Despawn();
         else DespawnServerRPC();
     }
 

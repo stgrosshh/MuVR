@@ -84,7 +84,7 @@ namespace UltimateXR.Devices.Integrations.DeviceSimulator {
 		}
 
 		// When UI validation is performed, add a simulator to the same object if one has not already been specified
-		protected virtual void OnValidate() => simulator ??= gameObject.GetOrAddComponent<XRDeviceSimulator>();
+		protected override void OnValidate() => simulator ??= gameObject.GetOrAddComponent<XRDeviceSimulator>();
 
 		#endregion
 

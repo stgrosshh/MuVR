@@ -3,14 +3,14 @@
 // Class which fades away the ghost hand when it is close to the physical hand
 [RequireComponent(typeof(SkinnedMeshRenderer))]
 public class ProximityHandFade : MonoBehaviour {
-	private SkinnedMeshRenderer renderer;
-	private Material mat;
-	private float originalAlpha;
+	private SkinnedMeshRenderer _renderer;
+	private Material _mat;
+	private float _originalAlpha;
 	protected void Awake() {
-		renderer = GetComponent<SkinnedMeshRenderer>();
-		mat = new Material(renderer.material);
-		renderer.material = mat;
-		originalAlpha = mat.color.a;
+		_renderer = GetComponent<SkinnedMeshRenderer>();
+		_mat = new Material(_renderer.material);
+		_renderer.material = _mat;
+		_originalAlpha = _mat.color.a;
 	}
 
 	// The bones to check the distance of
@@ -19,8 +19,8 @@ public class ProximityHandFade : MonoBehaviour {
 	public float distanceThreshold = .1f;
 
 	public void Update() {
-		var color = mat.color;
-		color.a = Mathf.Min((physicsBone.position - ghostBone.position).magnitude / distanceThreshold, 1) * originalAlpha;
-		mat.color = color;
+		var color = _mat.color;
+		color.a = Mathf.Min((physicsBone.position - ghostBone.position).magnitude / distanceThreshold, 1) * _originalAlpha;
+		_mat.color = color;
 	}
 }

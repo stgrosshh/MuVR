@@ -110,7 +110,7 @@ namespace uMuVR.Enhanced {
 		/// </summary>
 		/// <param name="newOwner">Connection the server should transfer ownership to</param>
 		public void RequestGiveOwnership(NetworkConnection newOwner) {
-			if (IsServer) GiveOwnership(newOwner);
+			if (IsServerInitialized) GiveOwnership(newOwner);
 			else GiveOwnershipServerRPC(newOwner);
 		}
 

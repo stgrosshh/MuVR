@@ -13,21 +13,20 @@ namespace uMuVR {
 	/// </summary>
 	/// <remarks>NOTE: Component ported from Mirror</remarks>
 	/// <remarks>Requires a <see cref="NetworkTransform"/> to synchronize position/rotation information!</remarks>
-	[HelpURL("https://mirror-networking.gitbook.io/docs/components/network-rigidbody")]
 	[RequireComponent(typeof(NetworkTransform))]
-	public class NetworkRigidbody : NetworkBehaviour {
+	public class NetworkRigidbody2D : NetworkBehaviour {
 		/// <summary>
 		/// Rigidbody that we are managing (this allows managing a rigidbody on a different object)
 		/// </summary>
 		/// <remarks>Component automatically searches for a rigidbody on the same object and assigns it if it exists</remarks>
 		[Title("Settings")]
 		[Required]
-		public Rigidbody target;
+		public Rigidbody2D target;
 
 		/// <summary>
 		/// Bool indicating if the rigidbody should be kinematic or not (use this instead of the same field on the rigidbody)
 		/// </summary>
-		[PropertyTooltip("Flag indicating weather or not the managed rigidbody should be Kinematic")]
+		[PropertyTooltip("Flag indicating weather or not the managed Rigidbody2D should be Kinematic")]
 		public bool targetIsKinematic;
 
 		/// <summary>
@@ -73,7 +72,7 @@ namespace uMuVR {
 		/// </summary>
 		private new void OnValidate() {
 			base.OnValidate();
-			target ??= GetComponent<Rigidbody>();
+			target ??= GetComponent<Rigidbody2D>();
 			if (target is not null) targetIsKinematic = target.isKinematic;
 		}
 
@@ -84,7 +83,7 @@ namespace uMuVR {
 		/// <summary>
 		/// Bool indicating if we are in server authoritative mode and have authority
 		/// </summary>
-		private bool ServerWithAuthority => IsServer && !clientAuthority;
+		private bool ServerWithAuthority => IsServerInitialized && !clientAuthority;
 		/// <summary>
 		/// Bool indicating if we have authority to perform physics simulations
 		/// </summary>
@@ -94,13 +93,13 @@ namespace uMuVR {
 
 		#region veclocity sync
 
-		[ReadOnly, SerializeField] private Vector3 _velocity;
-		public Vector3 velocity {
+		[ReadOnly, SerializeField] private Vector2 _velocity;
+		public Vector2 velocity {
 			get => _velocity;
 			set {
 				OnVelocityChanged(_velocity, value, false);
 				target.velocity = _velocity = value;
-				if (IsAuthority && IsServer)
+				if (IsAuthority && IsServerInitialized)
 					ObserversSetVelocity(value);
 				else if (ClientWithAuthority)
 					ServerSetVelocity(value);
@@ -108,19 +107,19 @@ namespace uMuVR {
 		}
 
 		[ServerRpc]
-		private void ServerSetVelocity(Vector3 value) {
+		private void ServerSetVelocity(Vector2 value) {
 			OnVelocityChanged(_velocity, value, false);
 			ObserversSetVelocity(value);
 			_velocity = value;
 		}
 
 		[ObserversRpc(BufferLast = true)]
-		private void ObserversSetVelocity(Vector3 value) {
+		private void ObserversSetVelocity(Vector2 value) {
 			OnVelocityChanged(_velocity, value, false);
 			_velocity = value;
 		}
 
-		private void OnVelocityChanged(Vector3 _, Vector3 newValue, bool onServer) {
+		private void OnVelocityChanged(Vector2 _, Vector2 newValue, bool onServer) {
 			if (IsAuthority) return;
 			target.velocity = newValue;
 		}
@@ -129,13 +128,13 @@ namespace uMuVR {
 
 		#region angular velocity sync
 
-		[ReadOnly, SerializeField] private Vector3 _angularVelocity;
-		public Vector3 angularVelocity {
+		[ReadOnly, SerializeField] private float _angularVelocity;
+		public float angularVelocity {
 			get => _angularVelocity;
 			set {
 				OnAngularVelocityChanged(_angularVelocity, value, false);
 				target.angularVelocity = _angularVelocity = value;
-				if (IsAuthority && IsServer)
+				if (IsAuthority && IsServerInitialized)
 					ObserversSetAngularVelocity(value);
 				else if (ClientWithAuthority)
 					ServerSetAngularVelocity(value);
@@ -143,19 +142,19 @@ namespace uMuVR {
 		}
 
 		[ServerRpc]
-		private void ServerSetAngularVelocity(Vector3 value) {
+		private void ServerSetAngularVelocity(float value) {
 			OnAngularVelocityChanged(_angularVelocity, value, false);
 			ObserversSetAngularVelocity(value);
 			_angularVelocity = value;
 		}
 
 		[ObserversRpc(BufferLast = true)]
-		private void ObserversSetAngularVelocity(Vector3 value) {
+		private void ObserversSetAngularVelocity(float value) {
 			OnAngularVelocityChanged(_angularVelocity, value, false);
 			_angularVelocity = value;
 		}
 
-		private void OnAngularVelocityChanged(Vector3 _, Vector3 newValue, bool onServer) {
+		private void OnAngularVelocityChanged(float _, float newValue, bool onServer) {
 			if (IsAuthority) return;
 			target.angularVelocity = newValue;
 		}
@@ -171,7 +170,7 @@ namespace uMuVR {
 				OnIsKinematicChanged(_isKinematic, value, false);
 				targetIsKinematic = _isKinematic = value;
 				UpdateOwnershipKinematicState();
-				if (IsAuthority && IsServer)
+				if (IsAuthority && IsServerInitialized)
 					ObserversSetIsKinematic(value);
 				else if (ClientWithAuthority)
 					ServerSetIsKinematic(value);
@@ -201,35 +200,35 @@ namespace uMuVR {
 
 		#region use gravity sync
 
-		[ReadOnly, SerializeField] private bool _useGravity;
-		public bool useGravity {
-			get => _useGravity;
+		[ReadOnly, SerializeField] private float _gravityScale;
+		public float gravityScale {
+			get => _gravityScale;
 			set {
-				OnUseGravityChanged(_useGravity, value, false);
-				target.useGravity = _useGravity = value;
-				if (IsAuthority && IsServer)
-					ObserversSetUseGravity(value);
+				OnGravityScaleChanged(_gravityScale, value, false);
+				target.gravityScale = _gravityScale = value;
+				if (IsAuthority && IsServerInitialized)
+					ObserversSetGravityScale(value);
 				else if (ClientWithAuthority)
-					ServerSetUseGravity(value);
+					ServerSetGravityScale(value);
 			}
 		}
 
 		[ServerRpc]
-		private void ServerSetUseGravity(bool value) {
-			OnUseGravityChanged(_useGravity, value, false);
-			ObserversSetUseGravity(value);
-			_useGravity = value;
+		private void ServerSetGravityScale(float value) {
+			OnGravityScaleChanged(_gravityScale, value, false);
+			ObserversSetGravityScale(value);
+			_gravityScale = value;
 		}
 
 		[ObserversRpc(BufferLast = true)]
-		private void ObserversSetUseGravity(bool value) {
-			OnUseGravityChanged(_useGravity, value, false);
-			_useGravity = value;
+		private void ObserversSetGravityScale(float value) {
+			OnGravityScaleChanged(_gravityScale, value, false);
+			_gravityScale = value;
 		}
 
-		private void OnUseGravityChanged(bool _, bool newValue, bool onServer) {
+		private void OnGravityScaleChanged(float _, float newValue, bool onServer) {
 			if (IsAuthority) return;
-			target.useGravity = newValue;
+			target.gravityScale = newValue;
 		}
 
 		#endregion
@@ -242,7 +241,7 @@ namespace uMuVR {
 			set {
 				OnDragChanged(_drag, value, false);
 				target.drag = _drag = value;
-				if (IsAuthority && IsServer)
+				if (IsAuthority && IsServerInitialized)
 					ObserversSetDrag(value);
 				else if (ClientWithAuthority)
 					ServerSetDrag(value);
@@ -277,7 +276,7 @@ namespace uMuVR {
 			set {
 				OnAngularDragChanged(_angularDrag, value, false);
 				target.angularDrag = _angularDrag = value;
-				if (IsAuthority && IsServer)
+				if (IsAuthority && IsServerInitialized)
 					ObserversSetAngularDrag(value);
 				else if (ClientWithAuthority)
 					ServerSetAngularDrag(value);
@@ -322,7 +321,7 @@ namespace uMuVR {
 			// Make sure that rarely updated properties have their initial values synced
 			if (IsAuthority) {
 				isKinematic = targetIsKinematic;
-				useGravity = target.useGravity;
+				gravityScale = target.gravityScale;
 				drag = target.drag;
 				angularDrag = target.angularDrag;
 			}
@@ -340,7 +339,7 @@ namespace uMuVR {
 			if (prev == Owner) return; // Ignore ownership changes if the owner didn't really change
 			if (!isStarted) return;
 
-			// If your the owner, make sure your local rigidbody has the same settings as the previous owner
+			// If your the owner, make sure your local Rigidbody2D has the same settings as the previous owner
 			if (IsAuthority) {
 				target.velocity = velocity;
 				target.angularVelocity = angularVelocity;
@@ -371,8 +370,8 @@ namespace uMuVR {
 
 		// TODO: Should this be switched to occurring onPostTick?
 		private void FixedUpdate() {
-			if (clearAngularVelocity && !syncAngularVelocity) target.angularVelocity = Vector3.zero;
-			if (clearVelocity && !syncVelocity) target.velocity = Vector3.zero;
+			if (clearAngularVelocity && !syncAngularVelocity) target.angularVelocity = 0;
+			if (clearVelocity && !syncVelocity) target.velocity = Vector2.zero;
 		}
 
 
@@ -383,7 +382,7 @@ namespace uMuVR {
 			if (!IsAuthority) return;
 
 			SendVelocity();
-			SendRigidBodySettings();
+			SendRigidbody2DSettings();
 		}
 
 		/// <summary>
@@ -406,13 +405,14 @@ namespace uMuVR {
 		/// <summary>
 		/// Sends other settings to the server if they have changed
 		/// </summary>
-		private void SendRigidBodySettings() {
+		private void SendRigidbody2DSettings() {
+
 			// These shouldn't change often so it is ok to send in their own Command
 			if (previousValue.isKinematic != targetIsKinematic)
 				previousValue.isKinematic = isKinematic = targetIsKinematic;
 
-			if (previousValue.useGravity != target.useGravity)
-				previousValue.useGravity = useGravity = target.useGravity;
+			if (previousValue.gravityScale != target.gravityScale)
+				previousValue.gravityScale = gravityScale = target.gravityScale;
 
 			if (Math.Abs(previousValue.drag - target.drag) > Mathf.Epsilon)
 				previousValue.drag = drag = target.drag;
@@ -425,10 +425,10 @@ namespace uMuVR {
 		///     holds previously synced values
 		/// </summary>
 		public struct ClientSyncState {
-			public Vector3 velocity;
-			public Vector3 angularVelocity;
+			public Vector2 velocity;
+			public float angularVelocity;
 			public bool isKinematic;
-			public bool useGravity;
+			public float gravityScale;
 			public float drag;
 			public float angularDrag;
 		}

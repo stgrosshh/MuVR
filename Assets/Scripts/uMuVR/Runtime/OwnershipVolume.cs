@@ -96,7 +96,7 @@ namespace uMuVR {
         /// When another object overlaps with us, update volumeOwner
         /// </summary>
         private void OnTriggerEnter(Collider other) {
-            if (IsServer) OnTriggerEnterServer(other.gameObject);
+            if (IsServerInitialized) OnTriggerEnterServer(other.gameObject);
             else OnTriggerEnterServerRpc(other.gameObject);
         }
         [Server]
@@ -141,7 +141,7 @@ namespace uMuVR {
         /// </summary>
         /// <param name="other"></param>
         private void OnTriggerExit(Collider other) {
-            if (IsServer) OnTriggerExitServer(other.gameObject);
+            if (IsServerInitialized) OnTriggerExitServer(other.gameObject);
             else OnTriggerExitServerRpc(other.gameObject);
         }
         [Server]
@@ -192,7 +192,7 @@ namespace uMuVR {
         /// </summary>
         /// <param name="m"></param>
         public void RegisterAsListener(OwnershipManager m) {
-            if (IsServer) RegisterAsListenerServer(m);
+            if (IsServerInitialized) RegisterAsListenerServer(m);
             else RegisterAsListenerServerRPC(m.NetworkObject);
         }
         [Server]
@@ -210,7 +210,7 @@ namespace uMuVR {
         /// </summary>
         /// <param name="m"></param>
         public void UnregisterAsListener(OwnershipManager m) {
-            if (IsServer) UnregisterAsListenerServer(m);
+            if (IsServerInitialized) UnregisterAsListenerServer(m);
             else UnregisterAsListenerServerRPC(m.NetworkObject);
         }
         [Server]

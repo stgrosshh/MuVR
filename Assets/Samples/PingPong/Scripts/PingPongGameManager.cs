@@ -55,14 +55,14 @@ public class PingPongGameManager : NetworkBehaviour {
 	// Function called when an object goes out of bounds on the +x side
 	public void OnObjectOutOfBoundsPlus(Collider ball) {
 		if (ball.CompareTag("PingPongBall")) {
-			if(IsServer) OnBallOutOfBounds(ball.GetComponent<NetworkObject>(), true);
+			if(IsServerInitialized) OnBallOutOfBounds(ball.GetComponent<NetworkObject>(), true);
 		}
 	}
 	
 	// Function called when an object goes out of bounds on the -x side
 	public void OnObjectOutOfBoundsMinus(Collider ball) {
 		if (ball.CompareTag("PingPongBall")) {
-			if(IsServer) OnBallOutOfBounds(ball.GetComponent<NetworkObject>(), false);
+			if(IsServerInitialized) OnBallOutOfBounds(ball.GetComponent<NetworkObject>(), false);
 		}
 	}
 

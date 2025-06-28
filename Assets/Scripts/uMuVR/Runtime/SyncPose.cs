@@ -319,7 +319,7 @@ namespace uMuVR {
 		/// </summary>
 		/// <param name="name">The name of the slot to check for</param>
 		/// <returns>True if the slot exists in the target avatar, false otherwise</returns>
-		protected bool ValidateSlot(string name) {
+		protected virtual bool ValidateSlot(string name) {
 			var sync = (SyncPose)target;
 			return sync?.targetAvatar?.slots?.Keys.Contains(name) ?? false;
 		}
@@ -368,7 +368,7 @@ namespace uMuVR {
 		/// </summary>
 		/// <param name="s">The name of the selected slot</param>
 		/// <exception cref="ArgumentException">Exception thrown if the slot is not a string!</exception>
-		protected void OnSlotSelect(object s) {
+		protected virtual void OnSlotSelect(object s) {
 			if (s is not string slot)
 				throw new ArgumentException(nameof(String));
 
