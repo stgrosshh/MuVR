@@ -10,8 +10,11 @@ The Multi-User Virtual Reality and Body Presence framework is a [Unity] framewor
 * Multiuser VR
 * Network Integration with the XR Interaction Toolkit
 * Networked Physics (Client Authoritative and Rollback [provided by FishNetworking])
-* Built-in Voice
 * Ownership Transfer Volumes
+* Optional Built-in Voice (when installing whole project repo including demos)
+
+* Supports FishNet 4.x
+* Supports Unity Version 6+
 
 ## Authors
 
@@ -20,20 +23,21 @@ The Multi-User Virtual Reality and Body Presence framework is a [Unity] framewor
 * Christopher Lewis
 * Frederick C. Harris Jr.
 
-## Installation
+## Installation without demos
+https://github.com/stgrosshh/MuVR.git?path=/Assets/Scripts/uMuVR
 
-Clone the repository (or download it as a zip) make sure your clone is recurisve (add `--recursive`) or that you run the following commands in the console after you have cloned the repository:
-```bash
-git submodule init
-git submodule update
-```
-Then open the project in Unity2021.3.15f1 (or newer).
+#### Dependencies
+Install git-URL based dependencies via package manager first (since Unity can still not resolve transient git dependencies ootb)
+* Serializable Dictionary for Pose Mapping: https://github.com/RotaryHeart/SerializableDictionaryLite.git (or Asset Store)
+* Tri-Inspector for Property Drawing: https://github.com/codewriter-packages/Unity-Localization-Stub-for-Tri-Inspector.git
 
-**WINDOWS USERS:**  git for windows doesn't track symbolic links by default. Thus if you encounter weird issues claiming the files for FishNet or UltimateXR can't be found... simply run from an administrative PowerShell window: 
-```bash
-cd Submodules # From the root project directory
-./FixSymlinks.bat
-```
+XRI is included as a dependency in package.json
+
+## Installation with demos
+* Clone the repository
+* Add the dependencies above (and XRI!)
+* Add UltimateXR as dependency for demos from https://github.com/VRMADA/ultimatexr-unity.git (or Asset Store)
+
 
 If you cloned the repository and want to use Git as your project's version control system, we recommend removing uMuVR's remote and replacing it with your own. This can be accomplished by running:
 
