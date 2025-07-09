@@ -1,6 +1,6 @@
 using uMuVR.Enhanced;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+
 #if UNITY_EDITOR
 using FishNet.Component.Transforming;
 using FishNet.Object;
@@ -12,7 +12,7 @@ namespace uMuVR {
 	/// <summary>
 	/// Class that extends an XR Grab Interactable to properly manage an attached NetworkRigidbody
 	/// </summary>
-	public class NetworkXRGrabInteractable : XRGrabInteractable {
+	public class NetworkXRGrabInteractable : UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable {
 		/// <summary>
 		/// Variable used to save properties that get changed (Gravity)
 		/// </summary>
@@ -50,11 +50,11 @@ namespace uMuVR {
 			}
 
 			usedGravity = rigidbody.useGravity;
-			oldDrag = rigidbody.drag;
-			oldAngularDrag = rigidbody.angularDrag;
+			oldDrag = rigidbody.linearDamping;
+			oldAngularDrag = rigidbody.angularDamping;
 			rigidbody.useGravity = false;
-			rigidbody.drag = 0;
-			rigidbody.angularDrag = 0;
+			rigidbody.linearDamping = 0;
+			rigidbody.angularDamping = 0;
 
 			wasNetworkKinematic = networkRigidbody.targetIsKinematic;
 			networkRigidbody.targetIsKinematic = movementType == MovementType.Kinematic || movementType == MovementType.Instantaneous;
@@ -68,8 +68,8 @@ namespace uMuVR {
 			}
 
 			rigidbody.useGravity = usedGravity;
-			rigidbody.drag = oldDrag;
-			rigidbody.angularDrag = oldAngularDrag;
+			rigidbody.linearDamping = oldDrag;
+			rigidbody.angularDamping = oldAngularDrag;
 			networkRigidbody.targetIsKinematic = wasNetworkKinematic;
 			networkRigidbody.UpdateOwnershipKinematicState();
 		}
@@ -78,7 +78,7 @@ namespace uMuVR {
 			base.Detach();
 			if (networkRigidbody is null) return;
 
-			networkRigidbody.velocity = networkRigidbody.target.velocity;
+			networkRigidbody.velocity = networkRigidbody.target.linearVelocity;
 			networkRigidbody.angularVelocity = networkRigidbody.target.angularVelocity;
 			// networkRigidbody.Tick();
 		}
@@ -92,10 +92,10 @@ namespace uMuVR {
 		/// </summary>
 		[MenuItem("CONTEXT/XRGrabInteractable/Make Networked")]
 		public static void MakeNetworkXRGrabInteractable(MenuCommand command) {
-			var interactable = (XRGrabInteractable)command.context;
+			var interactable = (UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable)command.context;
 			var go = interactable.gameObject;
 
-			var copy = new GameObject().AddComponent<XRGrabInteractable>().CloneFromWithIL(interactable);
+			var copy = new GameObject().AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>().CloneFromWithIL(interactable);
 
 			DestroyImmediate(interactable);
 			go.AddComponent<NetworkXRGrabInteractable>().CloneFromWithIL(copy);

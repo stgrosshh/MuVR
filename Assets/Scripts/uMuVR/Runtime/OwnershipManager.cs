@@ -2,7 +2,10 @@ using FishNet.Component.Transforming;
 using FishNet.Connection;
 using FishNet.Object;
 using TriInspector;
+// Define for UltimateXR so we can use MuVR also without having that loaded
+#if ULTIMATEXR
 using UltimateXR.Manipulation;
+#endif
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 #if UNITY_EDITOR
@@ -25,9 +28,11 @@ namespace uMuVR {
 
 		[PropertyTooltip("XR Interactable that is interacted with to trigger interactions")]
 		[ShowIf(nameof(enableInteractionTransfer)), PropertyOrder(1)]
-		public XRBaseInteractable XRIinteractable = null;
+		public UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable XRIinteractable = null;
+#if ULTIMATEXR
 		[ShowIf(nameof(enableInteractionTransfer)), PropertyOrder(2)]
 		public UxrGrabbableObject UXRinteractable = null;
+#endif
 		[PropertyTooltip("Number of ticks to wait before an ownership transfer can occur again")]
 		public uint ownershipTransferCooldown = 10;
 		
@@ -53,11 +58,13 @@ namespace uMuVR {
 					XRIinteractable.selectExited.AddListener(OnXRIInteractableUnselected);
 				}
 
+#if ULTIMATEXR				
 				if (UXRinteractable is not null) {
 					UXRinteractable.Grabbing += OnUxrInteractableSelected;
 					UXRinteractable.Released += OnUxrInteractableUnselected;
 					UXRinteractable.Placed += OnUxrInteractableUnselected;
 				}
+#endif
 			}
 			
 				
@@ -74,12 +81,13 @@ namespace uMuVR {
 				XRIinteractable.selectEntered.RemoveListener(OnXRIInteractableSelected);
 				XRIinteractable.selectExited.RemoveListener(OnXRIInteractableUnselected);
 			}
-			
+#if ULTIMATEXR			
 			if (UXRinteractable is not null) {
 				UXRinteractable.Grabbing -= OnUxrInteractableSelected;
 				UXRinteractable.Released -= OnUxrInteractableUnselected;
 				UXRinteractable.Placed -= OnUxrInteractableUnselected;
 			}
+#endif
 		}
 		
 		/// <summary>
@@ -112,9 +120,11 @@ namespace uMuVR {
 			base.OnValidate();
 
 			if (enableInteractionTransfer && XRIinteractable is null)
-				XRIinteractable = GetComponent<XRBaseInteractable>();
+				XRIinteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>();
+#if ULTIMATEXR			
 			if (enableInteractionTransfer && UXRinteractable is null)
 				UXRinteractable = GetComponent<UxrGrabbableObject>();
+#endif
 		}
 
 		
@@ -132,6 +142,7 @@ namespace uMuVR {
 			selectionCount++; // Since we are now selected, volume transfers are temporarily disabled
 		}
 
+#if ULTIMATEXR		
 		protected void OnUxrInteractableSelected(object sender, UxrManipulationEventArgs args) {
 			// note: beware of NetworkObjects that may be in the way of the user representation that we are looking for
 			// there was a NetworkObject on the XRRig at some point which broke this whole function
@@ -141,6 +152,7 @@ namespace uMuVR {
 			selectionCount++; // Since we are now selected, volume transfers are temporarily disabled
 			GiveOwnershipWithCooldown(no.Owner, ownershipTransferCooldown, true);
 		}
+#endif
 
 		/// <summary>
 		/// When interaction with this object ceases, decrement the number of selections
@@ -150,10 +162,11 @@ namespace uMuVR {
 			selectionCount--; // If this was the last interaction, volume transfers are now enabled again!
 		}
 
+#if ULTIMATEXR		
 		protected void OnUxrInteractableUnselected(object sender, UxrManipulationEventArgs args) {
 			selectionCount--; // If this was the last interaction, volume transfers are now enabled again!
 		}
-
+#endif
 		/// <summary>
 		/// When this object enters an Ownership Volume (only called if volume transfers are enabled), give it to the volume's owner
 		/// </summary>

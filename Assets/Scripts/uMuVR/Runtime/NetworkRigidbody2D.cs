@@ -73,7 +73,7 @@ namespace uMuVR {
 		private new void OnValidate() {
 			base.OnValidate();
 			target ??= GetComponent<Rigidbody2D>();
-			if (target is not null) targetIsKinematic = target.isKinematic;
+			if (target is not null) targetIsKinematic = target.bodyType == RigidbodyType2D.Kinematic;
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace uMuVR {
 			get => _velocity;
 			set {
 				OnVelocityChanged(_velocity, value, false);
-				target.velocity = _velocity = value;
+				target.linearVelocity = _velocity = value;
 				if (IsAuthority && IsServerInitialized)
 					ObserversSetVelocity(value);
 				else if (ClientWithAuthority)
@@ -121,7 +121,7 @@ namespace uMuVR {
 
 		private void OnVelocityChanged(Vector2 _, Vector2 newValue, bool onServer) {
 			if (IsAuthority) return;
-			target.velocity = newValue;
+			target.linearVelocity = newValue;
 		}
 
 		#endregion
@@ -240,7 +240,7 @@ namespace uMuVR {
 			get => _drag;
 			set {
 				OnDragChanged(_drag, value, false);
-				target.drag = _drag = value;
+				target.linearDamping = _drag = value;
 				if (IsAuthority && IsServerInitialized)
 					ObserversSetDrag(value);
 				else if (ClientWithAuthority)
@@ -263,7 +263,7 @@ namespace uMuVR {
 
 		private void OnDragChanged(float _, float newValue, bool onServer) {
 			if (IsAuthority) return;
-			target.drag = newValue;
+			target.linearDamping = newValue;
 		}
 
 		#endregion
@@ -275,7 +275,7 @@ namespace uMuVR {
 			get => _angularDrag;
 			set {
 				OnAngularDragChanged(_angularDrag, value, false);
-				target.angularDrag = _angularDrag = value;
+				target.angularDamping = _angularDrag = value;
 				if (IsAuthority && IsServerInitialized)
 					ObserversSetAngularDrag(value);
 				else if (ClientWithAuthority)
@@ -298,7 +298,7 @@ namespace uMuVR {
 
 		private void OnAngularDragChanged(float _, float newValue, bool onServer) {
 			if (IsAuthority) return;
-			target.angularDrag = newValue;
+			target.angularDamping = newValue;
 		}
 
 		#endregion
@@ -322,8 +322,8 @@ namespace uMuVR {
 			if (IsAuthority) {
 				isKinematic = targetIsKinematic;
 				gravityScale = target.gravityScale;
-				drag = target.drag;
-				angularDrag = target.angularDrag;
+				drag = target.linearDamping;
+				angularDrag = target.angularDamping;
 			}
 
 			isStarted = true;
@@ -341,7 +341,7 @@ namespace uMuVR {
 
 			// If your the owner, make sure your local Rigidbody2D has the same settings as the previous owner
 			if (IsAuthority) {
-				target.velocity = velocity;
+				target.linearVelocity = velocity;
 				target.angularVelocity = angularVelocity;
 			}
 
@@ -352,7 +352,14 @@ namespace uMuVR {
 		/// Updates the kinematic state of rigidbodies, making sure that anyone without authority isn't performing physics calculations
 		/// </summary>
 		public void UpdateOwnershipKinematicState() {
-			target.isKinematic = targetIsKinematic || !IsAuthority;
+			if (targetIsKinematic || !IsAuthority)
+			{
+				target.bodyType = RigidbodyType2D.Kinematic;
+			}
+			else
+			{
+				target.bodyType = RigidbodyType2D.Static;  // TODO is this the replacement for old isKinematic == false
+			}
 		}
 
 		/// <summary>
@@ -371,7 +378,7 @@ namespace uMuVR {
 		// TODO: Should this be switched to occurring onPostTick?
 		private void FixedUpdate() {
 			if (clearAngularVelocity && !syncAngularVelocity) target.angularVelocity = 0;
-			if (clearVelocity && !syncVelocity) target.velocity = Vector2.zero;
+			if (clearVelocity && !syncVelocity) target.linearVelocity = Vector2.zero;
 		}
 
 
@@ -392,13 +399,13 @@ namespace uMuVR {
 			// if angularVelocity has changed it is likely that velocity has also changed so just sync both values
 			// however if only velocity has changed just send velocity
 			if (syncVelocity && syncAngularVelocity) {
-				velocity = target.velocity;
+				velocity = target.linearVelocity;
 				angularVelocity = target.angularVelocity;
-				previousValue.velocity = target.velocity;
+				previousValue.velocity = target.linearVelocity;
 				previousValue.angularVelocity = target.angularVelocity;
 			} else if (syncVelocity) {
-				velocity = target.velocity;
-				previousValue.velocity = target.velocity;
+				velocity = target.linearVelocity;
+				previousValue.velocity = target.linearVelocity;
 			}
 		}
 
@@ -414,11 +421,11 @@ namespace uMuVR {
 			if (previousValue.gravityScale != target.gravityScale)
 				previousValue.gravityScale = gravityScale = target.gravityScale;
 
-			if (Math.Abs(previousValue.drag - target.drag) > Mathf.Epsilon)
-				previousValue.drag = drag = target.drag;
+			if (Math.Abs(previousValue.drag - target.linearDamping) > Mathf.Epsilon)
+				previousValue.drag = drag = target.linearDamping;
 
-			if (Math.Abs(previousValue.angularDrag - target.angularDrag) > Mathf.Epsilon)
-				previousValue.angularDrag = angularDrag = target.angularDrag;
+			if (Math.Abs(previousValue.angularDrag - target.angularDamping) > Mathf.Epsilon)
+				previousValue.angularDrag = angularDrag = target.angularDamping;
 		}
 
 		/// <summary>

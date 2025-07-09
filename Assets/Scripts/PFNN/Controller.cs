@@ -258,7 +258,7 @@ namespace PFNN {
 		}
 
 		protected void GetAllWalls() {
-			var terrainWalls = FindObjectsOfType<PFNN.Wall>();
+			var terrainWalls = FindObjectsByType<PFNN.Wall>(FindObjectsSortMode.None);
 			this.terrainWalls = new Utils.WallPoints[terrainWalls.Length + 1]; // The last wall slot is used for walls automatically found in the environment
 
 			for (var i = 0; i < terrainWalls.Length; i++)

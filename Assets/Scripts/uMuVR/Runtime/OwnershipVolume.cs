@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using UnityEngine;
 using Gma.DataStructures;
 using TriInspector;
+using UnityEngine;
+using NetworkBehaviour = uMuVR.Enhanced.NetworkBehaviour;
 
 namespace uMuVR {
     /// <summary>
@@ -13,7 +13,7 @@ namespace uMuVR {
     /// </summary>
     /// <remarks>NOTE: The system is not designed around overlapping ownership volumes, try to prevent this scenario if possible!</remarks>
     [RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(Collider))]
-    public class OwnershipVolume : uMuVR.Enhanced.NetworkBehaviour {
+    public class OwnershipVolume : NetworkBehaviour {
         /// <summary>
         /// "Stack" of unique users who are currently within the volume
         /// NOTE: Ordered set selected so that the stack ordering is preserved, while still only allowing unique network connections in the list

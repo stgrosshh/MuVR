@@ -6,6 +6,6 @@ namespace uMuVR.Utility {
 	/// Component which enables the physics simulation in non-networked environments
 	/// </summary>
 	public class ForceStartSimulation : MonoBehaviour {
-		private void Awake() => Physics.autoSimulation = true;
+		private void Awake() => Physics.simulationMode = SimulationMode.FixedUpdate;
 	}
 }
