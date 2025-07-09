@@ -10,5 +10,5 @@
     "name": "Joshua Dahl Erik Marsh Christopher Lewis Frederick C. Harris Jr.",
     "url": "https://github.com/hpcvis/MuVR"
   },
-  "dependencies": {}
+  "dependencies": {"com.unity.xr.interaction.toolkit" : "3.0.8" }
 }
