@@ -2,6 +2,7 @@
   "dependencies": {
     "com.codewriter.triinspector": "https://github.com/codewriter-packages/Tri-Inspector.git",
     "com.firstgeargames.fishnet": "https://github.com/FirstGearGames/FishNet.git?path=Assets/FishNet",
+    "com.rotaryheart.serializabledictionarylite": "https://github.com/RotaryHeart/SerializableDictionaryLite.git",
     "com.unity.collab-proxy": "2.6.0",
     "com.unity.feature.development": "1.0.2",
     "com.unity.feature.vr": "1.0.1",

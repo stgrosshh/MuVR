@@ -25,6 +25,13 @@
       },
       "hash": "986caa1befa29b0573047eaeeefaa9df338e485e"
     },
+    "com.rotaryheart.serializabledictionarylite": {
+      "version": "https://github.com/RotaryHeart/SerializableDictionaryLite.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "f5b89b878627153ce82cd2a0c61679aa18364f09"
+    },
     "com.unity.addressables": {
       "version": "2.2.2",
       "depth": 2,
